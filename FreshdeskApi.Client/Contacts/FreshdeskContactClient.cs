@@ -11,6 +11,7 @@ using FreshdeskApi.Client.Contacts.Models;
 using FreshdeskApi.Client.Contacts.Requests;
 using FreshdeskApi.Client.Extensions;
 using FreshdeskApi.Client.Models;
+using FreshdeskApi.Client.Pagination;
 
 namespace FreshdeskApi.Client.Contacts;
 
@@ -89,15 +90,28 @@ public class FreshdeskContactClient : IFreshdeskContactClient
     /// </returns>
     public async IAsyncEnumerable<ListContact> ListAllContactsAsync(
         ListAllContactsRequest request,
-        IPaginationConfiguration? pagingConfiguration = null,
+        ListPaginationConfiguration? pagingConfiguration = null,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         if (request == null) throw new ArgumentNullException(nameof(request), "Request must not be null");
-        pagingConfiguration.GuardPageBasedPagination();
+        pagingConfiguration ??= new ListPaginationConfiguration();
 
         await foreach (var contact in _freshdeskClient
-            .GetPagedResults<ListContact>(request.UrlWithQueryString, pagingConfiguration, EPagingMode.ListStyle, cancellationToken)
+            .GetPagedResults<ListContact>(request.UrlWithQueryString, pagingConfiguration, cancellationToken)
             .ConfigureAwait(false))
+        {
+            yield return contact;
+        }
+    }
+
+    /// <inheritdoc />
+    public async IAsyncEnumerable<Contact> FilterContactsAsync(string encodedQuery, PageBasedPaginationConfiguration? pagingConfiguration = null, CancellationToken cancellationToken = default)
+    {
+        pagingConfiguration ??= new PageBasedPaginationConfiguration();
+
+        await foreach (var contact in _freshdeskClient
+                           .GetPagedResults<Contact>($"/api/v2/search/contacts?query=\"{encodedQuery}\"", pagingConfiguration, cancellationToken)
+                           .ConfigureAwait(false))
         {
             yield return contact;
         }

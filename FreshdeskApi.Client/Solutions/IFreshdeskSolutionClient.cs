@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using FreshdeskApi.Client.Pagination;
 using FreshdeskApi.Client.Solutions.Models;
 using FreshdeskApi.Client.Solutions.Requests;
 
@@ -53,7 +54,7 @@ public interface IFreshdeskSolutionClient
     /// </returns>
     IAsyncEnumerable<Category> ListAllCategoriesAsync(
         string? languageCode = null,
-        IPaginationConfiguration? pagingConfiguration = null,
+        ListPaginationConfiguration? pagingConfiguration = null,
         CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -245,7 +246,7 @@ public interface IFreshdeskSolutionClient
     IAsyncEnumerable<Folder> GetAllFoldersInCategoryAsync(
         long categoryId,
         string? languageCode = null,
-        IPaginationConfiguration? pagingConfiguration = null,
+        ListPaginationConfiguration? pagingConfiguration = null,
         CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -509,7 +510,7 @@ public interface IFreshdeskSolutionClient
     IAsyncEnumerable<Article> ListArticlesInFolderAsync(
         long folderId,
         string? languageCode = null,
-        IPaginationConfiguration? pagingConfiguration = null,
+        ListPaginationConfiguration? pagingConfiguration = null,
         CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -546,6 +547,6 @@ public interface IFreshdeskSolutionClient
     /// </returns>
     IAsyncEnumerable<Article> SearchSolutionsAsync(
         string termUnencoded,
-        IPaginationConfiguration? pagingConfiguration = null,
+        ListPaginationConfiguration? pagingConfiguration = null,
         CancellationToken cancellationToken = default);
 }

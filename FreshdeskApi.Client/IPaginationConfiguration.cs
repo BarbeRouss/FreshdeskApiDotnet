@@ -1,5 +1,9 @@
+using System.Collections.Generic;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
+using FreshdeskApi.Client.Models;
+using Newtonsoft.Json;
 
 namespace FreshdeskApi.Client;
 
@@ -9,22 +13,13 @@ namespace FreshdeskApi.Client;
 /// </summary>
 public interface IPaginationConfiguration
 {
-    /// <summary>
-    /// Page to start from
-    /// </summary>
-    int? StartingPage { get; }
+    public Dictionary<string, string> BuildInitialPageParameters();
 
-    /// <summary>
-    /// A token to start from
-    /// </summary>
-    string? StartingToken { get; }
+    public Dictionary<string, string>? BuildNextPageParameters<T>(int page, PagedResponse<T> response);
 
-    /// <summary>
-    /// Page size (see Freshdesk API documentation, there are different allowed page sizes)
-    /// </summary>
-    int? PageSize { get; }
+    public PagedResponse<T> DeserializeResponse<T>(JsonTextReader reader, HttpResponseHeaders httpResponseHeaders);
 
-    public delegate Task ProcessPageDelegate(int page, string? currentToken, CancellationToken? cancellationToken = default);
+    public delegate Task ProcessPageDelegate(int page, string url, CancellationToken? cancellationToken = default);
 
     /// <summary>
     /// This event is invoked right after deserialization of the page
